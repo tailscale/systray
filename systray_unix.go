@@ -382,7 +382,8 @@ func (t *tray) createPropSpec() map[string]map[string]*prop.Prop {
 				Emit:     prop.EmitTrue,
 				Callback: nil,
 			},
-		}}
+		},
+	}
 }
 
 // PX is picture pix map structure with width and high

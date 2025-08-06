@@ -59,6 +59,7 @@ func copyLayout(in *menuLayout, depth int32) *menuLayout {
 
 // GetLayout is com.canonical.dbusmenu.GetLayout method.
 func (t *tray) GetLayout(parentID int32, recursionDepth int32, propertyNames []string) (revision uint32, layout menuLayout, err *dbus.Error) {
+	initialMenuBuilt.Wait()
 	instance.menuLock.Lock()
 	defer instance.menuLock.Unlock()
 	if m, ok := findLayout(parentID); ok {
@@ -72,7 +73,8 @@ func (t *tray) GetLayout(parentID int32, recursionDepth int32, propertyNames []s
 func (t *tray) GetGroupProperties(ids []int32, propertyNames []string) (properties []struct {
 	V0 int32
 	V1 map[string]dbus.Variant
-}, err *dbus.Error) {
+}, err *dbus.Error,
+) {
 	instance.menuLock.Lock()
 	defer instance.menuLock.Unlock()
 	for _, id := range ids {
@@ -131,7 +133,8 @@ func (t *tray) EventGroup(events []struct {
 	V1 string
 	V2 dbus.Variant
 	V3 uint32
-}) (idErrors []int32, err *dbus.Error) {
+},
+) (idErrors []int32, err *dbus.Error) {
 	for _, event := range events {
 		if event.V1 == "clicked" {
 			systrayMenuItemSelected(uint32(event.V0))
@@ -336,6 +339,8 @@ func showMenuItem(item *MenuItem) {
 }
 
 func refresh() {
+	instance.lock.Lock()
+	defer instance.lock.Unlock()
 	if instance.conn == nil || instance.menuProps == nil {
 		return
 	}
@@ -355,7 +360,6 @@ func refresh() {
 	if err != nil {
 		log.Printf("systray error: failed to emit layout updated signal: %v\n", err)
 	}
-
 }
 
 func resetMenu() {
