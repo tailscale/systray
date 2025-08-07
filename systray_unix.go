@@ -19,8 +19,8 @@ import (
 	"github.com/godbus/dbus/v5/introspect"
 	"github.com/godbus/dbus/v5/prop"
 
-	"fyne.io/systray/internal/generated/menu"
-	"fyne.io/systray/internal/generated/notifier"
+	"github.com/tailscale/systray/internal/generated/menu"
+	"github.com/tailscale/systray/internal/generated/notifier"
 )
 
 const (
